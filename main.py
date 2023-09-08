@@ -3,8 +3,9 @@ import random
 N_PLAYERS = 6
 N_DECKS = 1 
 RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
-RANKS = ['A', '2']#, '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+# RANKS = ['A', '2']#, '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 SUITS = list('CDHS')
+N_DOWN_CARDS = 4
         
        
 class Card():
@@ -14,13 +15,15 @@ class Card():
         self.suit = suit
 
     def __repr__(self):
-        return f'Deck {self.deck_number}, {self.rank} of {self.suit}'
+        # return f'Deck {self.deck_number}: {self.rank} of {self.suit}'
+        return f'{self.rank:>2} of {self.suit}'
          
 
 class Stack():
     def __init__(self):
         self.cards = []
         self.buildFreshStack()
+        self.shuffle()
 
     def buildFreshStack(self):
         for deck in range(N_DECKS):
@@ -55,8 +58,11 @@ class Player():
 
     def __repr__(self):
         player_info = f'Player {self.seat_num}'
-        button_info = 'has button' if self.has_button else 'nope' 
-        return player_info + ': ' + button_info
+        button_info = 'has button ' if self.has_button else ' '*11 
+        s = ''
+        for i in self.down_cards:
+            s = s + str(i) + ', '
+        return player_info + ': ' + button_info + ': ' + s 
 
     def addDownCard(self, down_card: Card):
         self.down_cards.append(down_card)
@@ -84,8 +90,14 @@ class Players():
         return
 
     def showAllPlayers(self):
-        for dude in self.roster:
-            print(dude)
+        for player in self.roster:
+            print(player)
+
+    def dealDownCards(self):
+        for i in range(N_DOWN_CARDS):
+            for j in range(1, N_PLAYERS + 1):
+                player_to_be_dealt = (self.button + j) % N_PLAYERS
+                self.roster[player_to_be_dealt].addDownCard(stack.drawCard())
 
 
 def main():
@@ -117,26 +129,15 @@ def main():
         if button == N_PLAYERS:
             button = 0
 
-def deal_down_cards():
-    
 
-    return 27
-
-
-
-# who's playing?
-dudes = Players()
-
-# well then get the cards
+# get the cards
 stack = Stack()
 
+# who's playing?
+players = Players()
+
 # friggin' deal already
+players.dealDownCards()
 
-
-
-# stack.showAllCards()
 print('-'*80)
-dudes.showAllPlayers()
-print('-'*80)
-dudes.assignButton()
-dudes.showAllPlayers()
+players.showAllPlayers()
