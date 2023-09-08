@@ -48,9 +48,9 @@ class Stack():
     
 
 class Player():
-    def __init__(self, seat_num: int, button: int):
+    def __init__(self, seat_num: int):
         self.seat_num = seat_num 
-        self.has_button = True if seat_num == button else False
+        self.has_button = False
         self.down_cards = []
 
     def __repr__(self):
@@ -64,16 +64,24 @@ class Player():
 
 class Players():
     def __init__(self):
-        self.button = 0
         self.roster = []
-        self.buildRoster(N_PLAYERS, 0)
-        
-    def buildRoster(self, n_players, button):
+        self.buildRoster(N_PLAYERS)
+        self.button = None
+        self.assignButton()
+
+    def buildRoster(self, n_players):
         for i in range(n_players):
-            self.roster.append(Player(i, button))
+            self.roster.append(Player(i))
     
     def assignButton(self):
-        return 27
+        if self.button is None:
+            self.button = 0
+        else:
+            self.roster[self.button].has_button = False
+            self.button = (self.button + 1) % N_PLAYERS
+            
+        self.roster[self.button].has_button = True
+        return
 
     def showAllPlayers(self):
         for dude in self.roster:
@@ -128,4 +136,7 @@ stack = Stack()
 
 # stack.showAllCards()
 print('-'*80)
+dudes.showAllPlayers()
+print('-'*80)
+dudes.assignButton()
 dudes.showAllPlayers()
