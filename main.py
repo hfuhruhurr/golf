@@ -1,13 +1,32 @@
 import random 
+from collections import Counter
+import csv
 
 N_PLAYERS = 6
 N_DECKS = 1 
 RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 # RANKS = ['A', '2']#, '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
-SUITS = list('CDHS')
+# SUITS = list('CDHS')
+SUITS = ['\u2660', '\u2663', '\u2665', '\u2666']
 N_DOWN_CARDS = 4
         
-       
+dude = {
+'A': 1: 1,
+'A': 2: 0,
+'A': 3: 1,
+'A': 4: -20
+}       
+
+print(dude)
+
+
+# read in points.csv and populate in dict
+with open('points.csv', 'r') as f:
+    reader = csv.DictReader(f)
+    data = [row for row in reader]
+    dude = {r['card']: [{k,v} for k,v in r.items() if 'card' not in k] for r in data}
+    print(dude)
+
 class Card():
     def __init__(self, deck_number, rank, suit):
         self.deck_number = deck_number
@@ -15,8 +34,7 @@ class Card():
         self.suit = suit
 
     def __repr__(self):
-        # return f'Deck {self.deck_number}: {self.rank} of {self.suit}'
-        return f'{self.rank:>2} of {self.suit}'
+        return f'{self.rank:>2}{self.suit}'
          
 
 class Stack():
@@ -59,14 +77,35 @@ class Player():
     def __repr__(self):
         player_info = f'Player {self.seat_num}'
         button_info = 'has button ' if self.has_button else ' '*11 
-        s = ''
-        for i in self.down_cards:
-            s = s + str(i) + ', '
-        return player_info + ': ' + button_info + ': ' + s 
+        
+        card_info = ''
+        for card in self.down_cards:
+            card_info += str(card) + ', '
+
+        score_info = self.tallyScore()
+
+        return player_info + ': ' + button_info + ': ' + card_info + '| ' #+ score_info
 
     def addDownCard(self, down_card: Card):
         self.down_cards.append(down_card)
 
+    def tallyScore(self):
+        # sort the ranks (to get ordinality)
+        ranks = []
+        for card in self.down_cards:
+            ranks.append(card.rank)
+        ranks.sort()
+
+        # calculate ordinality
+        c = Counter(ranks)
+        print(c.items())
+
+        # s = ''
+        # for rank in ranks:
+        #     s += rank 
+
+        return 
+    
 
 class Players():
     def __init__(self):
